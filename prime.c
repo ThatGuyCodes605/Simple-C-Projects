@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <limits.h>
 #define THREADS 4
 int count = 0;
 typedef struct {
@@ -11,7 +12,7 @@ typedef struct {
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int prime(int num){
 	if (num < 2) return false; /* 0 and 1 are not prime */
-	for (int i = 2; i < num; i++){
+	for (int i = 2; i * i <= num; i++){
 		if(num % i == 0){ 
 			return false;
 		}
@@ -30,20 +31,37 @@ void* thread_func(void* arg){
 	free(arg);
 	return NULL;
 }
-int main(void){
+int main(int argc, char** argv){
 
+	if (argc != 2) {
+		fprintf(stderr, "Usage: %s <upper_limit>\n", argv[0]);
+		return 1;
+	}
+	int upper = atoi(argv[1]); /* Convert the command line argument to an integer */
+	if(upper <= 0){
+		fprintf(stderr, "Please enter a positive integer as the upper limit.\n");
+		return 2;
+	}
 	/*for(int i = 0; i < 100; i++) 	if (prime(i))  printf("%d\n", i); */
 	pthread_t threads[THREADS];  
 	for (int i = 0; i < THREADS; i++){
 		ThreadData* data = malloc(sizeof(ThreadData)); /* Allocate memory for thread data */
-		data->start = i * 25; /* Each thread will check a range of 25 numbers */
-		data->end = (i + 1) * 25; /* End of the range for the thread */
-		pthread_create(&threads[i], NULL, thread_func, data); /* Create a thread to execute the thread function */
+		if (data == NULL) {
+			fprintf(stderr, "Memory allocation failed\n");
+			return 3;
+		}
+		data->start = i * (atoi(argv[1]) / THREADS); /* Calculate the start of the range for this thread */
+		data->end = (i + 1) * (atoi(argv[1]) / THREADS); /* Calculate the end of the range for this thread */
+		if (pthread_create(&threads[i], NULL, thread_func, data) != 0) {
+			fprintf(stderr, "Error creating thread %d\n", i);
+			free(data); /* Free the allocated memory if thread creation fails */
+			return 4;
+		}
 	}
 
 	for (int i = 0; i < THREADS; i++){
 		pthread_join(threads[i], NULL);
 	}
-	printf("Total prime numbers between 0 and 100: %d\n", count);
+	printf("Total prime numbers between 0 and %d: %d\n", upper, count);
 	return 0;
 }

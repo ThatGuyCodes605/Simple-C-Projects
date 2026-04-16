@@ -6,6 +6,10 @@ This repository is a collection of simple C projects that I have created to prac
 
 - **Calculator**: A basic calculator that can perform addition, subtraction, multiplication, and division.
 - **Password Generator**: A program that generates a random password based on user-defined criteria.
+- **Multithreaded Prime Number Generator**: A program that generates prime numbers using multiple threads to improve performance.
+- **Multithreading**: It's just me learning how to use threads in C. It's not a complete project, but it's a good starting point for learning about multithreading in C.
+- **Ncurses**: It's just me learning how to use the ncurses library in C. It's not a complete project, but it's a good starting point for learning about ncurses in C.
+
 
 ## Contributing
 If you would like to contribute to this repository, please fork the repository and create a pull request with your changes. All contributions are welcome! See the [CONTRIBUTING](CONTRIBUTING.md) file for more details on how to contribute.
