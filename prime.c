@@ -1,27 +1,26 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <pthread.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <limits.h>
 #define THREADS 4
-int count = 0;
+long long count = 0;
 typedef struct {
-	int start;
-	int end;
+	long long start;
+	long long end;
 } ThreadData;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int prime(int num){
-	if (num < 2) return false; /* 0 and 1 are not prime */
+	if (num < 2) return 0; /* 0 and 1 are not prime */
 	for (int i = 2; i * i <= num; i++){
 		if(num % i == 0){ 
-			return false;
+			return 0;
 		}
 	}
 	pthread_mutex_lock(&mutex);
 	printf("%d is a prime number.\n", num);
 	count++;
 	pthread_mutex_unlock(&mutex);
-	return true;
+	return 1;
 }
 void* thread_func(void* arg){
 	ThreadData* data = (ThreadData*)arg; /* Cast the argument to ThreadData pointer */
@@ -33,11 +32,11 @@ void* thread_func(void* arg){
 }
 int main(int argc, char** argv){
 
-	if (argc != 2) {
+	if (argc != 2 || atoll(argv[1]) > LLONG_MAX || atoll(argv[1]) <= 0) {
 		fprintf(stderr, "Usage: %s <upper_limit>\n", argv[0]);
 		return 1;
 	}
-	int upper = atoi(argv[1]); /* Convert the command line argument to an integer */
+	long long upper = atoll(argv[1]); /* Convert the command line argument to an integer */
 	if(upper <= 0){
 		fprintf(stderr, "Please enter a positive integer as the upper limit.\n");
 		return 2;
@@ -50,18 +49,18 @@ int main(int argc, char** argv){
 			fprintf(stderr, "Memory allocation failed\n");
 			return 3;
 		}
-		data->start = i * (atoi(argv[1]) / THREADS); /* Calculate the start of the range for this thread */
-		data->end = (i + 1) * (atoi(argv[1]) / THREADS); /* Calculate the end of the range for this thread */
+		data->start = i * (upper/ THREADS); /* Calculate the start of the range for this thread */
+		data->end = (i == THREADS - 1) ? upper + 1 : (i + 1) * (upper / THREADS); /* Calculate the end of the range for this thread, ensuring the last thread covers any remaining numbers */
 		if (pthread_create(&threads[i], NULL, thread_func, data) != 0) {
 			fprintf(stderr, "Error creating thread %d\n", i);
 			free(data); /* Free the allocated memory if thread creation fails */
 			return 4;
 		}
 	}
-
 	for (int i = 0; i < THREADS; i++){
 		pthread_join(threads[i], NULL);
-	}
-	printf("Total prime numbers between 0 and %d: %d\n", upper, count);
+	}	
+	pthread_mutex_destroy(&mutex); /* Destroy the mutex after use */
+	printf("Total prime numbers between 0 and %lld: %lld\n", upper, count);
 	return 0;
 }
