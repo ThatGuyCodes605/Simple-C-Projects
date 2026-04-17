@@ -32,7 +32,7 @@ void* thread_func(void* arg){
 }
 int main(int argc, char** argv){
 
-	if (argc != 2 || atoll(argv[1]) > LLONG_MAX || atoll(argv[1]) <= 0) {
+	if (argc != 2 || atoll(argv[1]) > LLONG_MAX) {
 		fprintf(stderr, "Usage: %s <upper_limit>\n", argv[0]);
 		return 1;
 	}
@@ -49,7 +49,7 @@ int main(int argc, char** argv){
 			fprintf(stderr, "Memory allocation failed\n");
 			return 3;
 		}
-		data->start = i * (upper/ THREADS); /* Calculate the start of the range for this thread */
+		data->start = i * (upper / THREADS); /* Calculate the start of the range for this thread */
 		data->end = (i == THREADS - 1) ? upper + 1 : (i + 1) * (upper / THREADS); /* Calculate the end of the range for this thread, ensuring the last thread covers any remaining numbers */
 		if (pthread_create(&threads[i], NULL, thread_func, data) != 0) {
 			fprintf(stderr, "Error creating thread %d\n", i);
