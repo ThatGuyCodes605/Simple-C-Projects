@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <limits.h>
+#include <pthread.h>
 #define THREADS 4
 long long count = 0;
 typedef struct {

@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run current",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
+      "preLaunchTask": "make current",
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe"
+    }
+  ]
+}

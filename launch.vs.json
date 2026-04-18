@@ -1,0 +1,13 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "name": "Run main.exe",
+      "project": "main.exe",
+      "projectTarget": "",
+      "program": "${workspaceRoot}\\main.exe"
+    }
+  ]
+}
